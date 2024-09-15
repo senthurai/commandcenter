@@ -1,0 +1,40 @@
+{
+  "name": "command-center-design-pattern",
+  "version": "1.0.0",
+  "description": "Design Pattern to design/implement solution using command center approach",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf dist && tsc && npm run copy",
+    "copy": "cp package-dist.json dist/package.json"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/senthurai/commandcenter.git"
+  },
+  "keywords": [
+    "design pattern",
+    "command center"
+  ],
+  "author": "Senthurai",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/senthurai/commandcenter/issues"
+  },
+  "homepage": "https://github.com/senthurai/commandcenter#readme",
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "command-center": "file:",
+    "command-center-des": "file:",
+    "command-center-design-pattern": "file:",
+    "command-center-dp": "file:",
+    "commandcenter": "file:",
+    "commandCenter": "file:",
+    "dp-commandcenter": "file:"
+  }
+}
