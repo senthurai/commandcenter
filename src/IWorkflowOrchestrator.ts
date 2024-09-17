@@ -1,10 +1,10 @@
-import { IHandler }from "./IHandler";
-import { ICommandCenterAction }from "./IAction";
-import { CommandCenter, ICommandCenter }from "./ICommandCenter";
-import { IProcessor }from "./IProcessor";
-import { ICommandCenterDelegates, ICommandCenterModel }from "./ccmodel";
 
-interface IWorkflowOrchestrator<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>>
+import { ICommandCenterAction } from "./IAction";
+import { CommandCenter, ICommandCenter } from "./ICommandCenter";
+import { IHandler, IProcessor } from "./IProcessor";
+import { ICommandCenterDelegates, ICommandCenterModel } from "./ccmodel";
+
+export interface IWorkflowOrchestrator<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>>
     extends ICommandCenter<D, M, ICommandCenterAction<D, M, any>, void>, IHandler<D, M> {
 }
 
@@ -17,9 +17,8 @@ export abstract class WorkflowOrchestrator<D extends ICommandCenterDelegates, M 
 
     private registry: Map<new (...args: any[]) => IProcessor<D, M, any, any>, any>;
 
-    private threads: Promise<any>[] = [];
-
-    getThreads(): Promise<any>[] {
+    private threads: Map<string, Promise<any>> = new Map();
+    getThreads(): Map<string, Promise<any>> {
         return this.threads;
     }
 
@@ -34,8 +33,10 @@ export abstract class WorkflowOrchestrator<D extends ICommandCenterDelegates, M 
     getHandler<P extends IProcessor<D, M, any, any>>(clazz: new (...args: any[]) => P): P {
         try {
             if (this.registry.has(clazz)) {
+                this.getDelegates().getLogger().verbose(`Accessing instance of ${clazz.name}`);
                 return this.registry.get(clazz);
             }
+            this.getDelegates().getLogger().verbose(`Creating instance of ${clazz.name}`);
             const newInstance = new clazz();
             newInstance.setParent(this);
             newInstance.register();

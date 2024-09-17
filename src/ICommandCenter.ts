@@ -1,7 +1,8 @@
 
-import { IProcessor } from "./IProcessor";
-import { AConsumer } from "./IConsumer";
+import { AConsumer, IProcessor } from "./IProcessor";
 import { ICommandCenterDelegates, ICommandCenterModel } from "./ccmodel";
+
+
 
 export interface ICommandCenter<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, T extends IProcessor<D, M, any, any>, I> {
     getProcessors(): Array<{ new(): T }>;

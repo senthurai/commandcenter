@@ -1,3 +1,4 @@
+import { LogDelegate } from "./LogDelegate";
 export interface ICommandCenterModel<D extends ICommandCenterDelegates> {
 
     /**
@@ -14,7 +15,7 @@ export interface ICommandCenterModel<D extends ICommandCenterDelegates> {
 }
 
 export interface ICommandCenterDelegates {
-
+    getLogger(): LogDelegate;
     /**
      * This method is used as marker to identify the delegates.
      * Typescript removes the interface from the compiled code, so this method is used to identify the delegates.

@@ -12,7 +12,7 @@ export abstract class UIAction<D extends ICommandCenterDelegates, M extends ICom
 }
 
 export interface IUIDesignAction<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, I, O> extends IProcessor<D, M, I, O> {
-    
+
 }
 
 export abstract class UIDesignAction<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, I, O> extends AProcessor<D, M, I, O> implements IUIDesignAction<D, M, I, O> {

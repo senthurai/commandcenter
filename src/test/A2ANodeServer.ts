@@ -11,7 +11,8 @@ export class A2ANodeServerWO extends WorkflowOrchestrator<IA2ANodeServerDelegate
     }
 
     handle(): void {
-        this.go(A2AInitServerAction, null)
+        this.go(A2AInitServerAction, 0)
+        console.log('A2ANodeServerWO-Done!');
     }
 
     constructor(delegates: A2ANodeServerDelegates) {
@@ -29,8 +30,9 @@ export class A2ANodeServerCommandCenter extends CommandCenter<A2ANodeServerDeleg
     }
 }
 
-export class A2AInitServerAction extends DataAction<A2ANodeServerDelegates, A2ANodeServerCCModel, unknown, unknown> {
-    process(input: unknown): unknown {
+export class A2AInitServerAction extends DataAction<A2ANodeServerDelegates, A2ANodeServerCCModel, number, number> {
+    process(input: number): number {
+        console.log('Init Server done!');
         return input;
     }
 }

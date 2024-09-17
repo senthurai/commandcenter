@@ -1,4 +1,5 @@
 
+import { LogLevel } from "../LogDelegate";
 import { A2ANodeServerWO } from "./A2ANodeServer";
 import { A2ANodeServerDelegates } from "./model";
 
@@ -17,4 +18,7 @@ console.log('Hello, World!');
 // });
 
 let s: A2ANodeServerWO = new A2ANodeServerWO(new A2ANodeServerDelegates());
-//s.handle();
+s.getDelegates().getLogger().setLevel(LogLevel.INFO);
+s.handle();
+console.log('Done!');
+ 

@@ -1,23 +1,15 @@
 {
-  "name": "command-center-design-pattern",
-  "version": "1.0.2",
+  "name": "workflow-orchestrator",
+  "version": "1.0.7",
   "description": "Design Pattern to design/implement solution using command center approach",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/senthurai/commandcenter.git"
-  },
   "keywords": [
     "design pattern",
     "command center"
   ],
-  "author": "senthurai",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/senthurai/commandcenter/issues"
-  },
-  "homepage": "https://github.com/senthurai/commandcenter#readme"
+  "author": "a2a-dev",
+  "license": "ISC"
 }

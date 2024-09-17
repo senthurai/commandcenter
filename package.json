@@ -1,12 +1,13 @@
 {
-  "name": "command-center-design-pattern",
-  "version": "1.0.0",
+  "name": "workflow-orchestrator",
+  "version": "1.0.7",
   "description": "Design Pattern to design/implement solution using command center approach",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf dist && tsc && npm run copy",
-    "copy": "cp package-dist.json dist/package.json"
+    "copy": "cp package-dist.json dist/package.json",
+    "publish": "cd dist && npm publish && cd .."
   },
   "type": "module",
   "repository": {
@@ -17,7 +18,7 @@
     "design pattern",
     "command center"
   ],
-  "author": "Senthurai",
+  "author": "a2a-dev",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/senthurai/commandcenter/issues"
@@ -29,12 +30,6 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "command-center": "file:",
-    "command-center-des": "file:",
-    "command-center-design-pattern": "file:",
-    "command-center-dp": "file:",
-    "commandcenter": "file:",
-    "commandCenter": "file:",
-    "dp-commandcenter": "file:"
+    "workflow-orchestrator": "file:"
   }
 }

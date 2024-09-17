@@ -2,9 +2,13 @@
     "compilerOptions": {
         "module": "CommonJS", 
         "noImplicitAny": true, 
+        
         "declaration": true,
         "outDir": "./dist",
         "rootDir": "./src", 
         "moduleResolution": "Node"
-    }
+    },
+    "include": [
+        "./src/**/*.ts"
+    ]
 }
