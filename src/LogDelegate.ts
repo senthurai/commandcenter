@@ -1,11 +1,4 @@
-
-export class LogConfig {
-    verbose: boolean;
-}
-
-export const LOG_CONFIG: LogConfig = {
-    verbose: false
-}
+ 
 export enum LogLevel {
     VERBOSE = 0,
     INFO = 10,

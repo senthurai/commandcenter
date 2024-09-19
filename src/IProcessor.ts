@@ -1,5 +1,6 @@
 
 import { ICommandCenterDelegates, ICommandCenterModel } from "./ccmodel";
+import { LogDelegate } from "./LogDelegate";
 
 
 export interface IProcessor<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, I, O> {
@@ -12,16 +13,19 @@ export interface IProcessor<D extends ICommandCenterDelegates, M extends IComman
     getHandler<H extends IProcessor<D, M, I, O>, I, O>(clazz: { new(...args: any[]): H }): H;
     getModel(): M;
     register(): void;
+    unregister(): void;
     getParent(): IProcessor<D, M, unknown, unknown> | undefined;
     setParent(parent: IProcessor<D, M, unknown, unknown> | undefined): void;
+    getPreProcessors<T extends IProcessor<D, M, unknown, unknown>>(): Array<{ new(): T }>;
 
 
 }
 export abstract class AProcessor<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, I, O> implements IProcessor<D, M, I, O> {
     private model: M;
-
+    private logger: LogDelegate;
     constructor(model: M) {
         this.model = model;
+        this.getPreProcessors().forEach(p => this.getHandler(p));
     }
 
     protected parent?: IProcessor<D, M, any, any> | undefined;
@@ -36,9 +40,14 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
         const key = typeName + "_" + this.generatePromiseKey();
         this.getThreads().set(key, promise);
         promise.then(() => {
-            this.getDelegates().getLogger().verbose("Promise resolved for " + typeName);
+            this.getLogger().verbose("Promise resolved for " + typeName);
             this.removePromise(key);
         }).catch(() => this.removePromise(key));
+    }
+
+    private getLogger() {
+
+        return this.logger || (this.logger = this.getDelegates().getLogger());
     }
 
     // Method to remove a promise from the collection
@@ -54,7 +63,7 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
             try {
                 resolve(this.goSync(actionType, withParam));
             } catch (e) {
-                this.getDelegates().getLogger().verbose("Failed to go to " + actionType.name + " with " + JSON.stringify(withParam));
+                this.getLogger().verbose("Failed to go to " + actionType.name + " with " + JSON.stringify(withParam));
                 reject(e);
             }
         });
@@ -64,9 +73,12 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
         return result;
 
     }
+    getPreProcessors<T extends IProcessor<D, M, unknown, unknown>>(): Array<{ new(): T; }> {
+        return [];
+    }
 
     goSync<P extends IProcessor<D, M, W, R>, W, R>(actionType: { new(...args: any): P }, withParam?: W): R {
-        this.getDelegates().getLogger().verbose("Going to " + actionType.name + " with " + JSON.stringify(withParam));
+        this.getLogger().verbose("Going to " + actionType.name + " with " + JSON.stringify(withParam));
         return this.getHandler(actionType).process(withParam);
     }
 
@@ -74,7 +86,7 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
 
     getThreads(): Map<String, Promise<any>> {
         if (this.getParent()) {
-            this.getDelegates().getLogger().verbose("Getting threads from parent for " + this.constructor.name);
+            this.getLogger().verbose("Getting threads from parent for " + this.constructor.name);
             return this.getParent()!.getThreads();
         } else {
             throw new Error("getThreads() method is expected to be overridden in the root ");
@@ -83,8 +95,9 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
 
     getDelegates(): D {
         if (this.getParent()) {
-            this.getDelegates().getLogger().verbose("Getting delegates from parent for " + this.constructor.name);
-            return this.getParent()!.getDelegates();
+            const delegates = this.getParent()!.getDelegates();
+            console.log("getting delegates from parent of " + this.constructor.name);
+            return delegates;
         } else {
             throw new Error("getDelegates() method is expected to be overridden in the root ");
         }
@@ -92,7 +105,7 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
 
     getHandler<H extends IProcessor<D, M, I, O>, I, O>(clazz: new (...args: any[]) => H): H {
         if (this.getParent()) {
-            this.getDelegates().getLogger().verbose(`getting parent of ${clazz.name}`);
+            this.getLogger().verbose(`getting parent of ${clazz.name}`);
             return this.getParent()!.getHandler(clazz);
         } else {
             throw new Error("getHandler() method is expected to be overridden in the root ");
@@ -100,7 +113,21 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
     }
 
     register(): void {
+        if (this.getParent()) {
+            this.getLogger().verbose("Registering " + this.constructor.name + " with parent");
+            this.getParent()!.register();
+        } else {
+            throw new Error("register() method is expected to be overridden in the root ");
+        }
+    }
 
+    unregister(): void {
+        if (this.getParent()) {
+            this.getLogger().verbose("Unregistering " + this.constructor.name + " with parent");
+            this.getParent()!.unregister();
+        } else {
+            throw new Error("unregister() method is expected to be overridden in the root ");
+        }
     }
 
 

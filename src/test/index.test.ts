@@ -18,7 +18,7 @@ console.log('Hello, World!');
 // });
 
 let s: A2ANodeServerWO = new A2ANodeServerWO(new A2ANodeServerDelegates());
-s.getDelegates().getLogger().setLevel(LogLevel.INFO);
+s.getDelegates().getLogger().setLevel(LogLevel.VERBOSE);
 s.handle();
 console.log('Done!');
  

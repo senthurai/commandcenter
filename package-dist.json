@@ -1,6 +1,6 @@
 {
   "name": "workflow-orchestrator",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Design Pattern to design/implement solution using command center approach",
   "main": "index.js",
   "scripts": {

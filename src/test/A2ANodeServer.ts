@@ -1,4 +1,4 @@
- 
+
 import { CommandCenterAction, DataAction, ICommandCenterAction } from '../IAction.js';
 import { CommandCenter } from '../ICommandCenter.js';
 import { WorkflowOrchestrator } from '../IWorkflowOrchestrator.js';
@@ -21,7 +21,7 @@ export class A2ANodeServerWO extends WorkflowOrchestrator<IA2ANodeServerDelegate
 
 }
 
-export class A2ANodeServerCommandCenter extends CommandCenter<A2ANodeServerDelegates, A2ANodeServerCCModel, CommandCenterAction<A2ANodeServerDelegates, A2ANodeServerCCModel, unknown>, unknown> {
+export class A2ANodeServerCommandCenter extends CommandCenter<A2ANodeServerDelegates, A2ANodeServerCCModel, unknown> {
     getProcessors(): (new () => CommandCenterAction<A2ANodeServerDelegates, A2ANodeServerCCModel, unknown>)[] {
         return [];
     }

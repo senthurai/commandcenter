@@ -1,10 +1,10 @@
 {
   "name": "workflow-orchestrator",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Design Pattern to design/implement solution using command center approach",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node dist/test/index.test",
     "build": "rimraf dist && tsc && npm run copy",
     "copy": "cp package-dist.json dist/package.json",
     "publish": "cd dist && npm publish && cd .."
@@ -28,8 +28,5 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
-  },
-  "dependencies": {
-    "workflow-orchestrator": "file:"
   }
 }

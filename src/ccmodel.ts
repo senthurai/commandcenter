@@ -27,8 +27,5 @@ export interface ICommandCenterDelegates {
      */
     getDelegates(): this;
 }
-
-export interface Lazy {
-    readonly lazy: "lazy";
-}
+ 
 

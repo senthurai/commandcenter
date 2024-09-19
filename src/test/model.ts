@@ -1,5 +1,5 @@
 import { ICommandCenterDelegates, ICommandCenterModel } from "../ccmodel";
-import { LogDelegate } from "../LogDelegate";
+import { LogDelegate, LogLevel } from "../LogDelegate";
 
 
 export interface IA2ANodeServerCCModel extends ICommandCenterModel<A2ANodeServerDelegates> {
@@ -15,9 +15,10 @@ export class A2ANodeServerCCModel implements IA2ANodeServerCCModel {
     }
 }
 
+;
 export class A2ANodeServerDelegates implements IA2ANodeServerDelegates {
     getLogger(): LogDelegate {
-        return new ConcreteLogDelegate("simple");
+        return logger;
     }
     getDelegates(): this {
         return this;
@@ -35,3 +36,5 @@ export class ConcreteLogDelegate extends LogDelegate {
     }
 
 }
+const logger = new ConcreteLogDelegate("simple")
+logger.setLevel(LogLevel.VERBOSE)
