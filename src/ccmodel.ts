@@ -1,5 +1,5 @@
 import { LogDelegate } from "./LogDelegate";
-export interface ICommandCenterModel<D extends ICommandCenterDelegates> {
+export interface IModel<D extends IDelegates> {
 
     /**
      *  This method is used as marker to identify the model. 
@@ -14,7 +14,7 @@ export interface ICommandCenterModel<D extends ICommandCenterDelegates> {
 
 }
 
-export interface ICommandCenterDelegates {
+export interface IDelegates {
     getLogger(): LogDelegate;
     /**
      * This method is used as marker to identify the delegates.

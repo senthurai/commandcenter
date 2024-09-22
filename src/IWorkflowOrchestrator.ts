@@ -1,13 +1,13 @@
 
 import { CommandCenter, ICommandCenter } from "./ICommandCenter";
 import { IHandler, IProcessor } from "./IProcessor";
-import { ICommandCenterDelegates, ICommandCenterModel } from "./ccmodel";
+import { IDelegates, IModel } from "./ccmodel";
 
-export interface IWorkflowOrchestrator<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>>
+export interface IWorkflowOrchestrator<D extends IDelegates, M extends IModel<D>>
     extends ICommandCenter<D, M, void>, IHandler<D, M> {
 }
 
-export abstract class WorkflowOrchestrator<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>>
+export abstract class WorkflowOrchestrator<D extends IDelegates, M extends IModel<D>>
     extends CommandCenter<D, M, void>
 
     implements IWorkflowOrchestrator<D, M> {
@@ -37,9 +37,9 @@ export abstract class WorkflowOrchestrator<D extends ICommandCenterDelegates, M 
                 return this.registry.get(clazz.name);
             }
             this.getDelegates().getLogger().verbose(`Creating instance of ${clazz.name}`);
-            const newInstance = new clazz();
+            const newInstance = new clazz(this.getModel());
+           
             newInstance.setParent(this);
-            newInstance.register();
             this.registry.set(clazz.name, newInstance);
             return newInstance;
         } catch (e) {

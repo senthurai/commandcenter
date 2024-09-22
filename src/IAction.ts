@@ -1,6 +1,6 @@
 
 import { AConsumer, AProcessor, IProcessor } from "./IProcessor";
-import { ICommandCenterDelegates as IDelegates, ICommandCenterModel as IModel } from "./ccmodel";
+import { IDelegates as IDelegates, IModel as IModel } from "./ccmodel";
 
 
 export interface IAction<D extends IDelegates, M extends IModel<D>, I, O> extends IProcessor<D, M, I, O> {

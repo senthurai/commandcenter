@@ -1,7 +1,7 @@
 
 import { LogLevel } from "../LogDelegate";
-import { A2ANodeServerWO } from "./A2ANodeServer";
-import { A2ANodeServerDelegates } from "./model";
+import { SudokuWorkflow } from "./A2ANodeServer";
+import { A2ANodeServerDelegates } from "../model";
 
 console.log('Hello, World!');
 
@@ -17,7 +17,7 @@ console.log('Hello, World!');
 //     console.log(`Example app listening at http://localhost:${port}`);
 // });
 
-let s: A2ANodeServerWO = new A2ANodeServerWO(new A2ANodeServerDelegates());
+let s: SudokuWorkflow = new SudokuWorkflow(new A2ANodeServerDelegates());
 s.getDelegates().getLogger().setLevel(LogLevel.VERBOSE);
 s.handle();
 console.log('Done!');

@@ -1,28 +1,26 @@
 
-import { ICommandCenterDelegates, ICommandCenterModel } from "./ccmodel";
+import { IDelegates, IModel } from "./ccmodel";
 import { LogDelegate } from "./LogDelegate";
 
 
-export interface IProcessor<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, I, O> {
-
+export interface IProcessor<D extends IDelegates, M extends IModel<D>, I, O> {
+    readonly model: M;
     process(input: I | undefined): O;
     getThreads(): Map<String, Promise<any>>;
-    go<P extends IProcessor<D, M, W, R>, W extends unknown, R extends unknown>(actionType: new (...args: any) => P, input?: W): Promise<R>;
-    goSync<P extends IProcessor<D, M, W, R>, W extends unknown, R extends unknown>(actionType: { new(...args: any[]): P }, input?: W): R;
+    go<P extends IProcessor<D, M, W, R>, W extends any, R extends any>(actionType: new (...args: any) => P, input?: W): Promise<R>;
+    goSync<P extends IProcessor<D, M, W, R>, W extends any, R extends any>(actionType: { new(...args: any[]): P }, input?: W): R;
     getDelegates(): D;
     getHandler<H extends IProcessor<D, M, I, O>, I, O>(clazz: { new(...args: any[]): H }): H;
     getModel(): M;
-    register(): void;
-    unregister(): void;
-    getParent(): IProcessor<D, M, unknown, unknown> | undefined;
-    setParent(parent: IProcessor<D, M, unknown, unknown> | undefined): void;
-    getPreProcessors<T extends IProcessor<D, M, unknown, unknown>>(): Array<{ new(): T }>;
-
-
+    getParent(): IProcessor<D, M, any, any> | undefined;
+    setParent(parent: IProcessor<D, M, any, any> | undefined): void;
+    getPreProcessors<T extends IProcessor<D, M, any, any>>(): Array<{ new(): T }>;
 }
-export abstract class AProcessor<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, I, O> implements IProcessor<D, M, I, O> {
-    private model: M;
-    private logger: LogDelegate;
+
+
+export abstract class AProcessor<D extends IDelegates, M extends IModel<D>, I, O> implements IProcessor<D, M, I, O> {
+    readonly model: M;
+    private logger: LogDelegate | undefined;
     constructor(model: M) {
         this.model = model;
         this.getPreProcessors().forEach(p => this.getHandler(p));
@@ -73,13 +71,27 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
         return result;
 
     }
-    getPreProcessors<T extends IProcessor<D, M, unknown, unknown>>(): Array<{ new(): T; }> {
+    getPreProcessors<T extends IProcessor<D, M, any, any>>(): Array<{ new(): T; }> {
         return [];
     }
 
     goSync<P extends IProcessor<D, M, W, R>, W, R>(actionType: { new(...args: any): P }, withParam?: W): R {
-        this.getLogger().verbose("Going to " + actionType.name + " with " + JSON.stringify(withParam));
-        return this.getHandler(actionType).process(withParam);
+        // Log the action type and parameters for debugging purposes
+        this.getLogger().verbose(`Attempting to process ${actionType.name} with parameters: ${JSON.stringify(withParam)}`);
+
+        try {
+            // Ensure withParam is defined or set a default value
+            const params = withParam || {} as W; // Adjust default value as necessary
+            // Process the action and return the result
+            const result: R = this.getHandler(actionType).process(params);
+            // Log successful processing
+            this.getLogger().verbose(`${actionType.name} processed successfully.`);
+            return result;
+        } catch (e: any) {
+            // Log and rethrow the error for further handling
+            this.getLogger().error(`Error processing ${actionType.name}: ${e.message}`);
+            throw e;
+        }
     }
 
 
@@ -112,26 +124,9 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
         }
     }
 
-    register(): void {
-        if (this.getParent()) {
-            this.getLogger().verbose("Registering " + this.constructor.name + " with parent");
-            this.getParent()!.register();
-        } else {
-            throw new Error("register() method is expected to be overridden in the root ");
-        }
-    }
-
-    unregister(): void {
-        if (this.getParent()) {
-            this.getLogger().verbose("Unregistering " + this.constructor.name + " with parent");
-            this.getParent()!.unregister();
-        } else {
-            throw new Error("unregister() method is expected to be overridden in the root ");
-        }
-    }
 
 
-    setParent(parent: IProcessor<D, M, unknown, unknown>): void {
+    setParent(parent: IProcessor<D, M, any, any>): void {
         if (this.parent) {
             throw new Error("Parent is already set");
         }
@@ -142,17 +137,17 @@ export abstract class AProcessor<D extends ICommandCenterDelegates, M extends IC
         return this.model;
     }
 
-    getParent(): IProcessor<D, M, unknown, unknown> | undefined {
+    getParent(): IProcessor<D, M, any, any> | undefined {
         return this.parent;
     }
 }
 
 
-export interface IConsumer<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, C> extends IProcessor<D, M, C, void> {
+export interface IConsumer<D extends IDelegates, M extends IModel<D>, C> extends IProcessor<D, M, C, void> {
     consume(input: C): void;
 }
 
-export abstract class AConsumer<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, C> extends AProcessor<D, M, C, void> implements IConsumer<D, M, C> {
+export abstract class AConsumer<D extends IDelegates, M extends IModel<D>, C> extends AProcessor<D, M, C, void> implements IConsumer<D, M, C> {
     constructor(model: M) {
         super(model);
     }
@@ -163,11 +158,11 @@ export abstract class AConsumer<D extends ICommandCenterDelegates, M extends ICo
 }
 
 
-export interface IProducer<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, O> extends IProcessor<D, M, void, O> {
+export interface IProducer<D extends IDelegates, M extends IModel<D>, O> extends IProcessor<D, M, void, O> {
     produce(): O;
 }
 
-export abstract class AProducer<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>, O> extends AProcessor<D, M, void, O> implements IProducer<D, M, O> {
+export abstract class AProducer<D extends IDelegates, M extends IModel<D>, O> extends AProcessor<D, M, void, O> implements IProducer<D, M, O> {
     constructor(model: M) {
         super(model);
     }
@@ -176,13 +171,13 @@ export abstract class AProducer<D extends ICommandCenterDelegates, M extends ICo
         return this.produce();
     }
 }
-export interface IHandler<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>> extends IConsumer<D, M, void> {
+export interface IHandler<D extends IDelegates, M extends IModel<D>> extends IConsumer<D, M, void> {
     handle(): void;
 
     consume(input: void): void;
 }
 
-export abstract class AHandler<D extends ICommandCenterDelegates, M extends ICommandCenterModel<D>> extends AProcessor<D, M, void, void> implements IHandler<D, M> {
+export abstract class AHandler<D extends IDelegates, M extends IModel<D>> extends AProcessor<D, M, void, void> implements IHandler<D, M> {
     constructor(model: M) {
         super(model);
     }
